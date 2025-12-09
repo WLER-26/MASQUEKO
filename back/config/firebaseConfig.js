@@ -1,26 +1,36 @@
-// Arquivo: back/config/firebaseConfig.js
-const admin = require('firebase-admin');
+﻿const admin = require('firebase-admin');
+const fs = require('fs');
 const path = require('path');
 
-// Caminho para sua chave de conta de serviço
-// ESTE ARQUIVO PRECISA EXISTIR NESTA PASTA
-const serviceAccountPath = path.join(__dirname, 'firebase-service-account.json');
+function loadServiceAccount() {
+  try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON && process.env.FIREBASE_SERVICE_ACCOUNT_JSON.trim() !== '') {
+      console.log("⚡ Carregando credenciais Firebase via variável de ambiente.");
+      return JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    }
 
-try {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccountPath),
-  });
+    // fallback local apenas para desenvolvimento (não commitado)
+    const localPath = path.join(__dirname, 'firebase-service-account.json');
+    if (fs.existsSync(localPath)) {
+      console.log("⚠️ Carregando credenciais Firebase via arquivo local (DEV).");
+      return JSON.parse(fs.readFileSync(localPath, 'utf8'));
+    }
 
-  const db = admin.firestore();
-  const auth = admin.auth();
-
-  console.log('✅ Conexão com Firebase Admin SDK estabelecida!');
-
-  module.exports = { db, auth, admin };
-} catch (error) {
-  console.error(`❌ Erro ao conectar com Firebase Admin: ${error.message}`);
-  console.error("---");
-  console.error("VERIFIQUE SE O ARQUIVO 'firebase-service-account.json' ESTÁ NA PASTA 'back/config/'");
-  console.error("---");
-  process.exit(1);
+    throw new Error("Nenhuma credencial Firebase encontrada. Defina FIREBASE_SERVICE_ACCOUNT_JSON.");
+  } catch (err) {
+    console.error("❌ Erro ao carregar credenciais Firebase:", err);
+    process.exit(1);
+  }
 }
+
+const serviceAccount = loadServiceAccount();
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  // storageBucket: process.env.FIREBASE_STORAGE_BUCKET // descomente se usar storage
+});
+
+const db = admin.firestore();
+const auth = admin.auth();
+
+module.exports = { admin, db, auth };

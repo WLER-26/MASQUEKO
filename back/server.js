@@ -1,5 +1,4 @@
-// server.js
-const express = require('express');
+﻿const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
@@ -9,45 +8,9 @@ const { Server } = require("socket.io");
 
 dotenv.config();
 
-// ----------------------
-// 🔥 IMPORTAÇÃO CORRIGIDA DO FIREBASE (SEM ARQUIVO FÍSICO)
-// ----------------------
-const admin = require('firebase-admin');
+// Importar o db/auth inicializados no config
+const { db, auth } = require('./config/firebaseConfig');
 
-// Função segura para carregar as credenciais
-function loadFirebaseCredentials() {
-    try {
-        if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON && process.env.FIREBASE_SERVICE_ACCOUNT_JSON.trim() !== "") {
-            console.log("⚡ Carregando credenciais Firebase via variável de ambiente.");
-            return JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
-        }
-
-        // fallback local (somente em desenvolvimento)
-        const localPath = path.join(__dirname, 'config', 'firebase-service-account.json');
-        if (fs.existsSync(localPath)) {
-            console.log("⚠️ Carregando credenciais Firebase via arquivo local (DEV).");
-            return JSON.parse(fs.readFileSync(localPath, 'utf8'));
-        }
-
-        throw new Error("Nenhuma credencial Firebase encontrada.");
-    } catch (err) {
-        console.error("❌ Erro ao carregar credenciais Firebase:", err);
-        process.exit(1);
-    }
-}
-
-const serviceAccount = loadFirebaseCredentials();
-
-// Inicializando o Firebase Admin
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
-
-const db = admin.firestore();
-const auth = admin.auth();
-// ---------------------------------------------------------
-
-// Importa Cron Job de E-mails
 const startDigestJob = require('./jobs/digestCron');
 
 const app = express();
@@ -60,12 +23,12 @@ const io = new Server(server, {
     }
 });
 
-// Inicia cron job
+// --- INICIA O AGENDADOR DE E-MAILS ---
 startDigestJob();
 
+// --- RASTREADOR DE STATUS ONLINE ---
 const onlineUsers = new Map();
 
-// Middleware de autenticação do socket
 io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     if (!token) return next(new Error('Autenticação falhou: Sem token'));
@@ -79,15 +42,14 @@ io.use(async (socket, next) => {
     }
 });
 
-// Conexão dos sockets
 io.on('connection', async (socket) => {
     const userId = socket.userId;
     console.log(`🔔 Socket conectado: ${userId}`);
-
+    
     onlineUsers.set(userId, socket.id);
-    io.emit('user_status', { userId, status: 'online' });
+    io.emit('user_status', { userId: userId, status: 'online' });
 
-    socket.join(userId);
+    socket.join(userId); 
     socket.join('global_feed');
 
     try {
@@ -107,13 +69,13 @@ io.on('connection', async (socket) => {
     });
 
     socket.on('privateMessage', async ({ recipientId, text, audioUrl, sharedPost }) => {
-        if (!recipientId || (!text && !audioUrl && !sharedPost)) return;
+        if (!recipientId || (!text && !audioUrl && !sharedPost)) return; 
 
         const messageData = {
             senderId: userId,
-            recipientId,
-            text: text || '',
-            audioUrl: audioUrl || null,
+            recipientId: recipientId,
+            text: text || '', 
+            audioUrl: audioUrl || null, 
             sharedPost: sharedPost || null,
             createdAt: new Date().toISOString(),
         };
@@ -121,10 +83,10 @@ io.on('connection', async (socket) => {
         try {
             const docRef = await db.collection('messages').add(messageData);
             const newMessage = { _id: docRef.id, ...messageData };
-
+            
             io.to(recipientId).emit('new_message_notification', newMessage);
-            io.to(recipientId).emit('newMessage', newMessage);
-
+            io.to(recipientId).emit('newMessage', newMessage); 
+            
             if (recipientId !== userId) {
                 io.to(userId).emit('newMessage', newMessage);
             }
@@ -135,7 +97,7 @@ io.on('connection', async (socket) => {
 
     socket.on('disconnect', () => {
         onlineUsers.delete(userId);
-        io.emit('user_status', { userId, status: 'offline' });
+        io.emit('user_status', { userId: userId, status: 'offline' });
         console.log(`🔕 Socket desconectado: ${userId}`);
     });
 });
@@ -149,7 +111,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Rota de arquivos enviados
+// Rota de Imagem Explícita
 app.get('/uploads/:folder/:file', (req, res) => {
     const { folder, file } = req.params;
     const filePath = path.join(__dirname, 'uploads', folder, file);
@@ -163,13 +125,11 @@ app.get('/uploads/:folder/:file', (req, res) => {
 
 const uploadsPath = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
-
 app.use('/uploads', (req, res, next) => {
     res.header("Cross-Origin-Resource-Policy", "cross-origin");
     next();
 }, express.static(uploadsPath));
 
-// Rotas da API
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
@@ -182,7 +142,6 @@ const frontEndPath = path.join(__dirname, '../front');
 app.use(express.static(frontEndPath));
 
 app.get('/', (req, res) => res.redirect('/pages/home.html'));
-
 app.get('*', (req, res) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
         return res.status(404).json({ message: 'Rota não encontrada' });
@@ -191,6 +150,5 @@ app.get('*', (req, res) => {
     fs.existsSync(file) ? res.status(404).sendFile(file) : res.status(404).send('404');
 });
 
-// Porta fornecida pelo Render
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
