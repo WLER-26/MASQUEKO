@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Amigos - MASQUEKO</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="apple-touch-icon" href="/assets/logo-masqueko.png">
+    <link rel="icon" type="image/png" href="/assets/logo-masqueko.png">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/amigos-style.css">
+</head>
+<body>
+	<header class="navbar">
+		<div class="navbar-content">
+			<a href="/pages/home.html" class="logo">
+				<img src="/assets/logo-masqueko.png" alt="Logo MASQUEKO" class="logo-img">
+				<span>MASQUEKO</span>
+			</a>
+            <nav class="navbar-links">
+                <a href="/pages/home.html" class="navbar-link">Início</a>
+			    <a href="/pages/comunidades.html" class="navbar-link">Comunidades</a>
+			    <a href="/pages/amigos.html" class="navbar-link active">Amigos</a>
+                <a href="/pages/saved.html" class="navbar-link"><i class="fa-solid fa-bookmark"></i> Salvos</a>
+            </nav>
+			
+            <div class="user-menu">
+                <a href="/pages/chat.html" class="notification-bell" id="notificationBell" title="Mensagens">
+                    <i class="fa-solid fa-bell"></i>
+                    <span id="notificationDot"></span>
+                </a>
+                <a href="/pages/perfil.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                    <span id="navUsername">Carregando...</span>
+                    <img src="/assets/profile-pic.png" alt="Foto do Usuário" id="navUserPic">
+                </a>
+                <button id="logoutButton" title="Sair" aria-label="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+	</header>
+
+    <main class="main-content-wrapper">
+		<h1>Gerenciar Amigos</h1>
+		
+        <div class="friends-tabs">
+            <button class="tab-btn active" data-tab="my-friends"><i class="fa-solid fa-users"></i> Meus Amigos</button>
+			<button class="tab-btn" data-tab="requests"><i class="fa-solid fa-user-clock"></i> Pedidos</button>
+            <button class="tab-btn" data-tab="search"><i class="fa-solid fa-magnifying-glass"></i> Procurar</button>
+		</div>
+        
+        <div id="my-friends" class="tab-content active">
+			<div class="section-header">
+                <h2>Sua lista de amigos</h2>
+                <span class="badge-count" id="friendsCount">0</span>
+            </div>
+			<div id="friendList" class="user-list"></div>
+		</div>
+
+        <div id="requests" class="tab-content">
+			<h2>Pedidos de amizade recebidos</h2>
+			<div id="requestList" class="user-list"></div>
+		</div>
+
+        <div id="search" class="tab-content">
+			<h2>Encontrar Pessoas</h2>
+            <div class="search-filters">
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nome...">
+                <input type="text" id="tagInput" class="search-input" placeholder="Filtrar por tag (ex: Gamer)">
+            </div>
+			<div id="searchResults" class="user-list"></div>
+		</div>
+
+	</main>
+	<div id="notification"></div>
+
+    <nav class="mobile-bottom-nav">
+        <a href="/pages/home.html" class="mobile-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Início</span>
+        </a>
+        <a href="/pages/comunidades.html" class="mobile-nav-item">
+            <i class="fa-solid fa-users"></i>
+            <span>Comunidades</span>
+        </a>
+        <a href="/pages/saved.html" class="mobile-nav-item">
+            <i class="fa-solid fa-bookmark"></i>
+            <span>Salvos</span>
+        </a>
+        <a href="/pages/amigos.html" class="mobile-nav-item active">
+            <i class="fa-solid fa-user-group"></i>
+            <span>Amigos</span>
+        </a>
+        <a href="/pages/perfil.html" class="mobile-nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Perfil</span>
+        </a>
+        <button id="mobileLogoutBtn" class="mobile-nav-item" style="background:none; border:none; cursor:pointer; color: #ef4444;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Sair</span>
+        </button>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="/js/api.js"></script>
+	<script src="/js/amigos-script.js"></script>
+</body>
+</html>

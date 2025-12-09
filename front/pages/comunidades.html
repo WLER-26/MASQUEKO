@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Comunidades - MASQUEKO</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="apple-touch-icon" href="/assets/logo-masqueko.png">
+    
+    <link rel="icon" type="image/png" href="/assets/logo-masqueko.png">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/comunidades-style.css">
+</head>
+<body>
+	<header class="navbar">
+		<div class="navbar-content">
+			<a href="/pages/home.html" class="logo">
+				<img src="/assets/logo-masqueko.png" alt="Logo MASQUEKO" class="logo-img">
+				<span>MASQUEKO</span>
+			</a>
+            <nav class="navbar-links">
+                <a href="/pages/home.html" class="navbar-link">Início</a>
+			    <a href="/pages/comunidades.html" class="navbar-link active">Comunidades</a>
+			    <a href="/pages/amigos.html" class="navbar-link">Amigos</a>
+                <a href="/pages/saved.html" class="navbar-link"><i class="fa-solid fa-bookmark"></i> Salvos</a>
+            </nav>
+			
+            <div class="user-menu">
+                <a href="/pages/chat.html" class="notification-bell" id="notificationBell" title="Mensagens">
+                    <i class="fa-solid fa-bell"></i>
+                    <span id="notificationDot"></span>
+                </a>
+                <a href="/pages/perfil.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                    <span id="navUsername">Carregando...</span>
+                    <img src="/assets/profile-pic.png" alt="Foto do Usuário" id="navUserPic">
+                </a>
+                <button id="logoutButton" title="Sair" aria-label="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+	</header>
+
+    <main class="main-content-wrapper">
+		<div class="communities-header">
+			<h1>Explorar Comunidades</h1>
+			<button id="showCreateCommunityModalBtn" class="navbar-button"><i class="fa-solid fa-plus"></i> Criar Nova Comunidade</button>
+		</div>
+		<div id="community-list" class="community-grid"></div>
+	</main>
+
+    <footer class="footer">
+        <p>&copy; 2024 MASQUEKO. Todos os direitos reservados.</p>
+    </footer>
+
+	<div id="createCommunityModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-community">
+        <div class="modal-content card">
+            <header class="modal-header">
+                <h2 id="modal-title-community">Criar Nova Comunidade</h2>
+                <button id="cancelCreateCommunityBtn" class="close-btn" aria-label="Fechar modal">&times;</button>
+            </header>
+            <form id="createCommunityForm">
+                <input type="hidden" id="editCommunityId">
+                <div class="form-group">
+                    <label for="communityName">Nome da Comunidade</label>
+                    <input type="text" id="communityName" placeholder="Ex: c/jogos" required>
+                </div>
+                <div class="form-group">
+                    <label for="communityDescriptionInput">Descrição</label>
+                    <textarea id="communityDescriptionInput" placeholder="Descreva o propósito da sua comunidade..." required></textarea>
+                </div>
+                
+                <div class="form-group" style="background: var(--primary-extralight); padding: 10px; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 8px;">
+                        <input type="checkbox" id="communityIsPrivate" style="width: auto; margin: 0;">
+                        <label for="communityIsPrivate" style="margin: 0; cursor: pointer; font-weight: bold;">Comunidade Privada</label>
+                    </div>
+                    <small style="display: block; color: var(--text-secondary); margin-bottom: 10px;">Requer aprovação para entrar. Apenas membros veem o conteúdo.</small>
+                    
+                    <div id="globalFeedOption" style="display: none; margin-left: 20px; border-left: 2px solid var(--primary-color); padding-left: 10px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="communityShowGlobal" style="width: auto; margin: 0;">
+                            <label for="communityShowGlobal" style="margin: 0; cursor: pointer;">Mostrar posts no Feed Global?</label>
+                        </div>
+                        <small style="color: var(--text-secondary);">Se marcado, posts aparecerão na Home de todos.</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="communityImageFile">Ícone da Comunidade:</label>
+                    <input type="file" id="communityImageFile" accept="image/*" class="input-file-hidden">
+                    <label for="communityImageFile" class="input-file-label"><i class="fa-solid fa-cloud-arrow-up"></i> <span>Escolher Ícone</span></label>
+                    <small>Deixe em branco para usar o logo padrão.</small>
+                </div>
+                <div class="form-group">
+                    <label for="communityImageUrl">(Opcional) Ou cole uma URL:</label>
+                    <input type="url" id="communityImageUrl" placeholder="https://...">
+                </div>
+                <button type="submit" class="submit-btn" id="createCommunitySubmitBtn">Criar Comunidade</button>
+            </form>
+        </div>
+    </div>
+
+	<div id="notification"></div>
+
+    <nav class="mobile-bottom-nav">
+        <a href="/pages/home.html" class="mobile-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Início</span>
+        </a>
+        <a href="/pages/comunidades.html" class="mobile-nav-item active">
+            <i class="fa-solid fa-users"></i>
+            <span>Comunidades</span>
+        </a>
+        <a href="/pages/saved.html" class="mobile-nav-item">
+            <i class="fa-solid fa-bookmark"></i>
+            <span>Salvos</span>
+        </a>
+        <a href="/pages/amigos.html" class="mobile-nav-item">
+            <i class="fa-solid fa-user-group"></i>
+            <span>Amigos</span>
+        </a>
+        <a href="/pages/perfil.html" class="mobile-nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Perfil</span>
+        </a>
+        <button id="mobileLogoutBtn" class="mobile-nav-item" style="background:none; border:none; cursor:pointer; color: #ef4444;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Sair</span>
+        </button>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+	<script src="/js/api.js"></script>
+	<script src="/js/comunidades-script.js"></script>
+</body>
+</html>

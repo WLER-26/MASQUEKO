@@ -1,0 +1,24 @@
+{
+  "name": "MASQUEKO",
+  "short_name": "MASQUEKO",
+  "start_url": "/pages/home.html",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/assets/logo-masqueko.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/logo-masqueko.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+/* === Estilo das Comunidades - MASQUEKO === */
+
+.communities-header, .community-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.community-page-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+}
+.community-page-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-light);
+    object-fit: cover;
+}
+#communityDescription {
+    color: var(--text-secondary);
+    max-width: 600px;
+}
+
+.navbar-button {
+    background: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.navbar-button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.community-card {
+    background: var(--surface-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.community-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.community-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-light);
+    margin-bottom: 1rem;
+}
+.community-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+}
+.community-desc {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    flex-grow: 1;
+}
+.community-actions {
+    margin-top: 1.5rem;
+}
+.community-actions a {
+    text-decoration: none;
+}
+.community-actions button {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.community-actions button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+
+/* Estilos da Página de Comunidade Única */
+.community-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+.community-info-card {
+    background: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 100px;
+}
+.community-info-card h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.8rem;
+    margin-bottom: 1rem;
+}
+#asideCommunityDescription {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+.community-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+}
+.stat-item i {
+    color: var(--primary-color);
+}
+
+/* === Adições para Gerenciamento de Comunidade === */
+
+/* Container para os botões de admin */
+.community-admin-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0; /* Começa invisível */
+    transition: var(--transition-subtle);
+}
+
+/* O card precisa de 'position: relative' */
+.community-card {
+    position: relative;
+}
+
+/* Mostra os botões quando o mouse está sobre o card */
+.community-card:hover .community-admin-actions {
+    opacity: 1;
+}
+
+.admin-btn {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-subtle);
+}
+
+.admin-btn:hover {
+    transform: scale(1.1);
+}
+
+.admin-btn.edit:hover {
+    background-color: var(--primary-extralight);
+    color: var(--primary-dark);
+}
+
+.admin-btn.delete:hover {
+    background-color: #fef2f2; /* Vermelho claro */
+    color: #ef4444; /* Vermelho */
+}
+/* === ADIÇÕES PARA RESPONSIVO === */
+@media (max-width: 768px) {
+    /* Faz o feed e a barra lateral ficarem um em cima do outro */
+    .community-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tira a barra lateral da posição "sticky" */
+    .community-info-card,
+    .trending-card { /* Também afeta o card de trending aqui */
+        position: static;
+        top: auto;
+        margin-top: 1.5rem;
+    }
+
+    .community-page-header {
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+}

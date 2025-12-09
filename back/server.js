@@ -1,0 +1,155 @@
+// server.js
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
+const http = require('http'); 
+const { Server } = require("socket.io");
+
+// Importar o Cron Job de E-mails
+const startDigestJob = require('./jobs/digestCron'); 
+
+dotenv.config();
+const { db, auth } = require('./config/firebaseConfig'); 
+
+const app = express();
+const server = http.createServer(app); 
+
+const io = new Server(server, {
+    cors: {
+        origin: "*", 
+        methods: ["GET", "POST", "PUT", "DELETE"]
+    }
+});
+
+// --- INICIA O AGENDADOR DE E-MAILS ---
+startDigestJob(); 
+
+// --- RASTREADOR DE STATUS ONLINE ---
+const onlineUsers = new Map(); 
+
+io.use(async (socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (!token) return next(new Error('Autenticação falhou: Sem token'));
+    try {
+        const decodedToken = await auth.verifyIdToken(token);
+        socket.userId = decodedToken.uid;
+        next();
+    } catch (error) {
+        console.error("Erro socket auth:", error.message);
+        next(new Error('Token inválido'));
+    }
+});
+
+io.on('connection', async (socket) => {
+    const userId = socket.userId;
+    console.log(`🔔 Socket conectado: ${userId}`);
+    
+    onlineUsers.set(userId, socket.id);
+    io.emit('user_status', { userId: userId, status: 'online' });
+
+    socket.join(userId); 
+    socket.join('global_feed');
+
+    try {
+        const communitiesSnapshot = await db.collection('communities')
+            .where('members', 'array-contains', userId)
+            .get();
+        communitiesSnapshot.forEach(doc => {
+            socket.join(`community_${doc.id}`);
+        });
+    } catch (error) {
+        console.error("Erro ao entrar nas salas de comunidade:", error);
+    }
+
+    socket.on('get_online_users', () => {
+        const onlineList = Array.from(onlineUsers.keys());
+        socket.emit('online_users_list', onlineList);
+    });
+
+    socket.on('privateMessage', async ({ recipientId, text, audioUrl, sharedPost }) => {
+        if (!recipientId || (!text && !audioUrl && !sharedPost)) return; 
+
+        const messageData = {
+            senderId: userId,
+            recipientId: recipientId,
+            text: text || '', 
+            audioUrl: audioUrl || null, 
+            sharedPost: sharedPost || null,
+            createdAt: new Date().toISOString(),
+        };
+
+        try {
+            const docRef = await db.collection('messages').add(messageData);
+            const newMessage = { _id: docRef.id, ...messageData };
+            
+            io.to(recipientId).emit('new_message_notification', newMessage);
+            io.to(recipientId).emit('newMessage', newMessage); 
+            
+            if (recipientId !== userId) {
+                io.to(userId).emit('newMessage', newMessage);
+            }
+        } catch (error) {
+            console.error("Erro mensagem:", error);
+        }
+    });
+
+    socket.on('disconnect', () => {
+        onlineUsers.delete(userId);
+        io.emit('user_status', { userId: userId, status: 'offline' });
+        console.log(`🔕 Socket desconectado: ${userId}`);
+    });
+});
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
+// Rota de Imagem Explícita
+app.get('/uploads/:folder/:file', (req, res) => {
+    const { folder, file } = req.params;
+    const filePath = path.join(__dirname, 'uploads', folder, file);
+    if (fs.existsSync(filePath)) {
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.sendFile(filePath);
+    } else {
+        res.status(404).send('Arquivo não encontrado');
+    }
+});
+
+const uploadsPath = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
+app.use('/uploads', (req, res, next) => {
+    res.header("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+}, express.static(uploadsPath));
+
+// --- ROTAS ---
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/communities', require('./routes/communityRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
+
+const frontEndPath = path.join(__dirname, '../front');
+app.use(express.static(frontEndPath));
+
+app.get('/', (req, res) => res.redirect('/pages/home.html'));
+app.get('*', (req, res) => {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
+        return res.status(404).json({ message: 'Rota não encontrada' });
+    }
+    const file = path.join(frontEndPath, '404.html');
+    fs.existsSync(file) ? res.status(404).sendFile(file) : res.status(404).send('404');
+});
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));

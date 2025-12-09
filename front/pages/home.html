@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Página Inicial - MASQUEKO</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="apple-touch-icon" href="/assets/logo-masqueko.png">
+    <link rel="icon" type="image/png" href="/assets/logo-masqueko.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/perfil-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .share-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
+        .share-user-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
+        .share-user-item:hover { background-color: var(--primary-extralight); }
+        .share-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .share-name { font-weight: 600; color: var(--text-primary); flex-grow: 1; }
+        .share-btn-send { background: var(--primary-color); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-content">
+            <a href="/pages/home.html" class="logo">
+                <img src="/assets/logo-masqueko.png" alt="Logo MASQUEKO" class="logo-img">
+                <span>MASQUEKO</span>
+            </a>
+            <nav class="navbar-links">
+                <a href="/pages/home.html" class="navbar-link active">Início</a>
+                <a href="/pages/comunidades.html" class="navbar-link">Comunidades</a>
+                <a href="/pages/amigos.html" class="navbar-link">Amigos</a>
+                <a href="/pages/saved.html" class="navbar-link"><i class="fa-solid fa-bookmark"></i> Salvos</a>
+            </nav>
+            <div class="user-menu">
+                <a href="/pages/chat.html" class="notification-bell" id="notificationBell" title="Mensagens">
+                    <i class="fa-solid fa-bell"></i>
+                    <span id="notificationDot"></span>
+                </a>
+                <a href="/pages/perfil.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                    <span id="navUsername">Carregando...</span>
+                    <img src="/assets/profile-pic.png" alt="Foto do Usuário" id="navUserPic">
+                </a>
+                <button id="logoutButton" title="Sair" aria-label="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-wrapper">
+        <main class="profile-grid">
+            <div class="feed-column">
+                <div class="create-post-box card" id="createPostContainer">
+                    <h3><i class="fa-solid fa-pen-to-square"></i> Criar Nova Postagem</h3>
+                    <form id="createPostForm">
+                        <textarea id="postContentInput" name="conteudo" placeholder="Compartilhe algo... (Markdown suportado: **negrito**, # título)" required></textarea>
+                        
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                            <input type="file" id="postMediaFile" accept="image/*,video/*" class="input-file-hidden">
+                            <label for="postMediaFile" class="input-file-label" style="flex: 1; margin: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> <span>Mídia</span>
+                            </label>
+                            
+                            <button type="button" id="openPollModalBtn" class="input-file-label" style="flex: 1; margin: 0; background: var(--surface-color);">
+                                <i class="fa-solid fa-square-poll-vertical"></i> <span>Enquete</span>
+                            </button>
+                        </div>
+
+                        <div id="pollPreviewArea" style="display: none; margin-top: 10px; padding: 10px; background: var(--primary-extralight); border-radius: 8px; border: 1px solid var(--primary-light);">
+                            <strong style="color: var(--primary-dark);"><i class="fa-solid fa-check"></i> Enquete Anexada</strong>
+                            <p id="pollPreviewQuestion" style="margin: 5px 0 0 0; font-size: 0.9rem; color: var(--text-secondary);"></p>
+                            <button type="button" id="removePollBtn" style="margin-top: 10px; background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Remover Enquete</button>
+                        </div>
+
+                        <input type="url" id="postImageUrlInput" class="url-input" placeholder="Ou cole um link de imagem/vídeo aqui..." style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
+                        <select id="postCommunitySelect" style="margin-bottom: 1rem;">
+                            <option value="" disabled selected>Carregando opções...</option>
+                        </select>
+                        <button type="submit">Publicar</button>
+                    </form>
+                </div>
+                <hr class="section-divider" id="postDivider">
+                <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-secondary);">Feed Recente</h2>
+                <div id="feedContainer"><p>Carregando o feed...</p></div>
+            </div>
+            <aside class="profile-column">
+                <div class="card trending-card" style="margin-top: 0;">
+                    <h3><i class="fa-solid fa-fire"></i> Em Alta</h3>
+                    <ul class="trending-list" id="trendingListContainer"><li>Carregando...</li></ul>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <div id="editPostModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header"><h2>Editar Postagem</h2><button id="closeEditPostModalBtn" class="close-btn">&times;</button></header>
+            <form id="editPostForm"><input type="hidden" id="editPostIdInput"><div class="form-group"><label>Conteúdo:</label><textarea id="editPostContentInput" rows="5" required></textarea></div><div class="form-group"><label>URL da Mídia:</label><input type="url" id="editPostImageUrlInput"></div><button type="submit" class="submit-btn">Salvar Alterações</button></form>
+        </div>
+    </div>
+
+    <div id="sharePostModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header"><h2>Enviar para...</h2><button id="closeShareModalBtn" class="close-btn">&times;</button></header>
+            <div style="margin-bottom: 10px;">
+                <input type="text" id="shareSearchInput" placeholder="Buscar amigo..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;">
+            </div>
+            <ul class="share-list" id="shareFriendList">
+                <p style="text-align: center; color: var(--text-secondary);">Carregando amigos...</p>
+            </ul>
+        </div>
+    </div>
+
+    <div id="createPollModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Criar Enquete</h2>
+                <button id="closePollModalBtn" class="close-btn">&times;</button>
+            </header>
+            <div class="form-group">
+                <label>Pergunta:</label>
+                <input type="text" id="pollQuestionInput" placeholder="Ex: Qual o melhor jogo de RPG?" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+            </div>
+            <div class="form-group">
+                <label>Opções:</label>
+                <div id="pollOptionsList">
+                    <input type="text" class="poll-option-input" placeholder="Opção 1" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;">
+                    <input type="text" class="poll-option-input" placeholder="Opção 2" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;">
+                </div>
+                <button type="button" id="addPollOptionBtn" class="add-option-btn" style="background: transparent; border: 1px dashed var(--primary-color); color: var(--primary-color); width: 100%; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-plus"></i> Adicionar Opção</button>
+            </div>
+            <button type="button" id="confirmPollBtn" class="submit-btn">Anexar Enquete</button>
+        </div>
+    </div>
+
+    <div id="notification"></div>
+
+    <nav class="mobile-bottom-nav">
+        <a href="/pages/home.html" class="mobile-nav-item active">
+            <i class="fa-solid fa-house"></i>
+            <span>Início</span>
+        </a>
+        <a href="/pages/comunidades.html" class="mobile-nav-item">
+            <i class="fa-solid fa-users"></i>
+            <span>Comunidades</span>
+        </a>
+        <a href="/pages/saved.html" class="mobile-nav-item">
+            <i class="fa-solid fa-bookmark"></i>
+            <span>Salvos</span>
+        </a>
+        <a href="/pages/amigos.html" class="mobile-nav-item">
+            <i class="fa-solid fa-user-group"></i>
+            <span>Amigos</span>
+        </a>
+        <a href="/pages/perfil.html" class="mobile-nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Perfil</span>
+        </a>
+        <button id="mobileLogoutBtn" class="mobile-nav-item" style="background:none; border:none; cursor:pointer; color: #ef4444;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Sair</span>
+        </button>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/home-script.js"></script>
+</body>
+</html>

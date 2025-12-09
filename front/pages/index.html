@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bem-vindo à MASQUEKO</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="apple-touch-icon" href="/assets/logo-masqueko.png">
+    
+    <link rel="icon" type="image/png" href="/assets/logo-masqueko.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .auth-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .auth-modal-overlay.show { opacity: 1; visibility: visible; }
+        .auth-modal {
+            background: #fff; padding: 2rem; border-radius: 15px;
+            width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-20px); transition: transform 0.3s ease;
+        }
+        .auth-modal-overlay.show .auth-modal { transform: translateY(0); }
+        .auth-modal h2 { color: #333; margin-bottom: 1rem; }
+        .auth-modal p { color: #666; margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .auth-modal input {
+            width: 100%; padding: 12px; margin-bottom: 1rem;
+            border: 1px solid #ddd; border-radius: 8px; outline: none;
+        }
+        .auth-modal button {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            font-weight: bold; cursor: pointer; margin-bottom: 0.5rem;
+            transition: 0.2s;
+        }
+        .btn-confirm { background: #7c3aed; color: #fff; }
+        .btn-confirm:hover { background: #6d28d9; }
+        .btn-cancel { background: #f3f4f6; color: #333; }
+        .btn-cancel:hover { background: #e5e7eb; }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form id="registerForm">
+                <h1>Crie sua Conta</h1>
+                <div class="input-group">
+                    <input type="text" id="registerName" placeholder="Nome" required>
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="registerEmail" placeholder="Email" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="registerPassword" placeholder="Senha (mín. 6 caracteres)" required minlength="6">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <button type="submit">Cadastrar</button>
+                
+                <div class="mobile-switch">
+                    <p>Já tem uma conta? <span id="mobileToLogin">Entrar</span></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-container sign-in">
+            <form id="loginForm">
+                <h1>Entrar</h1>
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder="Senha" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                <a href="#" id="forgotPasswordLink">Esqueceu a senha?</a>
+                <button type="submit">Entrar</button>
+
+                <div class="mobile-switch">
+                    <p>Novo por aqui? <span id="mobileToRegister">Criar conta</span></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <img src="/assets/logo-masqueko.png" class="toggle-logo" alt="Logo">
+                    <h1>Bem-vindo de Volta!</h1>
+                    <p>Acesse sua conta para ver o que há de novo.</p>
+                    <button class="hidden" id="login">Entrar</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <img src="/assets/logo-masqueko.png" class="toggle-logo" alt="Logo">
+                    <h1>Olá, Explorador!</h1>
+                    <p>Cadastre-se e comece a compartilhar suas ideias.</p>
+                    <button class="hidden" id="register">Cadastrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="forgotPasswordModal" class="auth-modal-overlay">
+        <div class="auth-modal">
+            <h2>Recuperar Senha</h2>
+            <p>Digite seu e-mail abaixo para receber um link de redefinição.</p>
+            <form id="forgotPasswordForm">
+                <input type="email" id="forgotEmailInput" placeholder="Seu e-mail cadastrado" required>
+                <button type="submit" class="btn-confirm">Enviar Link</button>
+                <button type="button" class="btn-cancel" id="closeForgotModal">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="notification"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>
