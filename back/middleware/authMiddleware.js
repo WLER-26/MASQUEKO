@@ -3,51 +3,44 @@ const { auth, db } = require('../config/firebaseConfig');
 
 exports.protect = async (req, res, next) => {
     let token;
-
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
-            // Obter token do header (formato: "Bearer TOKEN")
             token = req.headers.authorization.split(' ')[1];
-
-            // Verificar o token usando o Firebase Admin
             const decodedToken = await auth.verifyIdToken(token);
-
-            // Verifica se a rota atual é a de registro
-            // Usamos .includes() para ser mais seguro contra barras no final ou prefixos de api
             const isRegisterRoute = req.originalUrl.includes('/auth/register');
-
-            // Buscamos o perfil completo do usuário no Firestore
             const userDoc = await db.collection('users').doc(decodedToken.uid).get();
 
             if (!userDoc.exists) {
-                // CENÁRIO DE REGISTRO:
-                // Se o usuário NÃO existe no banco, mas está tentando acessar a rota de registro,
-                // permitimos que ele passe. O controller 'register' vai criar o documento.
                 if (isRegisterRoute) {
-                    req.user = { id: decodedToken.uid }; // Anexa apenas o ID para o controller usar
-                    return next(); // DEIXA PASSAR para criar a conta
+                    req.user = { id: decodedToken.uid };
+                    return next();
                 }
-                
-                // Se não for rota de registro e não tiver perfil, bloqueia.
-                return res.status(404).json({ message: 'Usuário não encontrado no Firestore. Termine seu cadastro.' });
+                return res.status(404).json({ message: 'Usuário não encontrado.' });
             }
 
-            // Se o usuário já existe, anexa os dados completos ao request
+            // Injeta dados do usuário E se é admin
+            const userData = userDoc.data();
             req.user = {
-                id: userDoc.id, // Este é o UID
-                ...userDoc.data()
+                id: userDoc.id,
+                ...userData,
+                isAdmin: !!userData.isAdmin // Garante booleano
             };
             
             next();
         } catch (error) {
-            console.error('Erro na verificação do token:', error);
-            // Se o token expirou ou é inválido
-            res.status(401).json({ message: 'Não autorizado, token inválido ou expirado.' });
+            console.error('Erro auth:', error);
+            res.status(401).json({ message: 'Não autorizado.' });
         }
+    } else {
+        res.status(401).json({ message: 'Sem token.' });
     }
+};
 
-    if (!token) {
-        // Se não enviou token nenhum
-        res.status(401).json({ message: 'Não autorizado, sem token.' });
+// Middleware para garantir que é Admin
+exports.adminOnly = (req, res, next) => {
+    if (req.user && req.user.isAdmin) {
+        next();
+    } else {
+        res.status(403).json({ message: 'Acesso negado: Apenas administradores.' });
     }
 };

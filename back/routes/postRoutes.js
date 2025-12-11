@@ -12,19 +12,22 @@ const {
     getTrendingTags,
     voteOnComment,
     getSavedPosts,
-    voteOnPoll // <-- NOVA IMPORTAÇÃO
+    voteOnPoll,
+    getPostById,
+    repostPost // <-- IMPORTADO
 } = require('../controllers/postController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Rotas públicas (ou semi-públicas)
 router.get('/', getAllPosts);
 router.get('/tag/:tag', getPostsByTag);
 router.get('/trending', getTrendingTags);
 
-// Rotas privadas
 router.get('/saved', protect, getSavedPosts);
-router.put('/poll/vote', protect, voteOnPoll); // <-- NOVA ROTA DE VOTAÇÃO
+router.get('/:id', getPostById);
+
+router.put('/poll/vote', protect, voteOnPoll);
 router.post('/', protect, createPost);
+router.post('/:id/repost', protect, repostPost); // <-- NOVA ROTA
 router.put('/:id', protect, updatePost);
 router.delete('/:id', protect, deletePost);
 router.put('/:id/vote', protect, voteOnPost);

@@ -64,10 +64,26 @@
 					<h3>Criar Postagem em <span id="postBoxCommunityName"></span></h3>
 					<form id="createPostForm">
 						<textarea id="postContentInput" name="conteudo" placeholder="Compartilhe suas ideias... (Markdown suportado)" required></textarea>
-                        <input type="file" id="postMediaFile" accept="image/*,video/*" class="input-file-hidden">
-                        <label for="postMediaFile" class="input-file-label" style="margin-top: 1rem;"><i class="fa-solid fa-cloud-arrow-up"></i> <span>Escolher Arquivo</span></label>
-                        <input type="url" id="postImageUrlInput" class="url-input" placeholder="Ou cole um link de imagem/vídeo aqui..." style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
-						<button type="submit" style="margin-top: 1rem;">Publicar</button>
+                        
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                            <input type="file" id="postMediaFile" accept="image/*,video/*" class="input-file-hidden">
+                            <label for="postMediaFile" class="input-file-label" style="flex: 1; margin: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> <span>Mídia</span>
+                            </label>
+                            
+                            <button type="button" id="openPollModalBtn" class="input-file-label" style="flex: 1; margin: 0; background: var(--surface-color);">
+                                <i class="fa-solid fa-square-poll-vertical"></i> <span>Enquete</span>
+                            </button>
+                        </div>
+
+                        <div id="pollPreviewArea" style="display: none; margin-top: 10px; padding: 10px; background: var(--primary-extralight); border-radius: 8px; border: 1px solid var(--primary-light);">
+                            <strong style="color: var(--primary-dark);"><i class="fa-solid fa-check"></i> Enquete Anexada</strong>
+                            <p id="pollPreviewQuestion" style="margin: 5px 0 0 0; font-size: 0.9rem; color: var(--text-secondary);"></p>
+                            <button type="button" id="removePollBtn" style="margin-top: 10px; background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Remover Enquete</button>
+                        </div>
+
+                        <input type="url" id="postImageUrlInput" class="url-input" placeholder="Ou cole um link de imagem/vídeo aqui..." style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
+						<button type="submit" style="margin-top: 0.5rem;">Publicar</button>
 					</form>
 				</div>
 				<hr class="section-divider" id="feedDivider">
@@ -96,7 +112,7 @@
         </div>
 	</main>
 
-    <div id="editPostModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-post">
+    <div id="editPostModal" class="modal-overlay" role="dialog">
         <div class="modal-content">
             <header class="modal-header">
                 <h2 id="modal-title-post">Editar Postagem</h2>
@@ -117,7 +133,84 @@
         </div>
     </div>
 
+    <div id="sharePostModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header"><h2>Enviar para...</h2><button id="closeShareModalBtn" class="close-btn">&times;</button></header>
+            <div style="margin-bottom: 10px;">
+                <input type="text" id="shareSearchInput" placeholder="Buscar amigo..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;">
+            </div>
+            <ul class="share-list" id="shareFriendList">
+                <p style="text-align: center; color: var(--text-secondary);">Carregando amigos...</p>
+            </ul>
+        </div>
+    </div>
+
+    <div id="repostModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Repostar Publicação</h2>
+                <button id="closeRepostModalBtn" class="close-btn">&times;</button>
+            </header>
+            <form id="repostForm">
+                <input type="hidden" id="repostPostIdInput">
+                <div class="form-group">
+                    <textarea id="repostCommentInput" placeholder="Adicione um comentário ao repost (opcional)..." rows="4" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="submit-btn"><i class="fa-solid fa-retweet"></i> Repostar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="createPollModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Criar Enquete</h2>
+                <button id="closePollModalBtn" class="close-btn">&times;</button>
+            </header>
+            <div class="form-group">
+                <label>Pergunta:</label>
+                <input type="text" id="pollQuestionInput" placeholder="Ex: Qual o melhor jogo de RPG?" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+            </div>
+            <div class="form-group">
+                <label>Opções:</label>
+                <div id="pollOptionsList">
+                    <input type="text" class="poll-option-input" placeholder="Opção 1" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;">
+                    <input type="text" class="poll-option-input" placeholder="Opção 2" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;">
+                </div>
+                <button type="button" id="addPollOptionBtn" class="add-option-btn" style="background: transparent; border: 1px dashed var(--primary-color); color: var(--primary-color); width: 100%; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-plus"></i> Adicionar Opção</button>
+            </div>
+            <button type="button" id="confirmPollBtn" class="submit-btn">Anexar Enquete</button>
+        </div>
+    </div>
+
 	<div id="notification"></div>
+
+    <nav class="mobile-bottom-nav">
+        <a href="/pages/home.html" class="mobile-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Início</span>
+        </a>
+        <a href="/pages/comunidades.html" class="mobile-nav-item active">
+            <i class="fa-solid fa-users"></i>
+            <span>Comunidades</span>
+        </a>
+        <a href="/pages/saved.html" class="mobile-nav-item">
+            <i class="fa-solid fa-bookmark"></i>
+            <span>Salvos</span>
+        </a>
+        <a href="/pages/amigos.html" class="mobile-nav-item">
+            <i class="fa-solid fa-user-group"></i>
+            <span>Amigos</span>
+        </a>
+        <a href="/pages/perfil.html" class="mobile-nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Perfil</span>
+        </a>
+        <button id="mobileLogoutBtn" class="mobile-nav-item" style="background:none; border:none; cursor:pointer; color: #ef4444;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Sair</span>
+        </button>
+    </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>

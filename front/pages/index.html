@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        /* Estilos dos Modais */
         .auth-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6); z-index: 2000;
@@ -21,19 +22,24 @@
             opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
         .auth-modal-overlay.show { opacity: 1; visibility: visible; }
+        
         .auth-modal {
             background: #fff; padding: 2rem; border-radius: 15px;
-            width: 90%; max-width: 400px; text-align: center;
+            width: 90%; max-width: 500px; text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             transform: translateY(-20px); transition: transform 0.3s ease;
+            max-height: 85vh; display: flex; flex-direction: column;
         }
+        
         .auth-modal-overlay.show .auth-modal { transform: translateY(0); }
         .auth-modal h2 { color: #333; margin-bottom: 1rem; }
         .auth-modal p { color: #666; margin-bottom: 1.5rem; font-size: 0.95rem; }
+        
         .auth-modal input {
             width: 100%; padding: 12px; margin-bottom: 1rem;
             border: 1px solid #ddd; border-radius: 8px; outline: none;
         }
+        
         .auth-modal button {
             width: 100%; padding: 12px; border: none; border-radius: 8px;
             font-weight: bold; cursor: pointer; margin-bottom: 0.5rem;
@@ -43,6 +49,45 @@
         .btn-confirm:hover { background: #6d28d9; }
         .btn-cancel { background: #f3f4f6; color: #333; }
         .btn-cancel:hover { background: #e5e7eb; }
+
+        /* Estilo do Checkbox de Termos */
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            color: #666;
+            text-align: left;
+        }
+        .terms-checkbox input {
+            width: auto;
+            margin-top: 3px;
+            cursor: pointer;
+        }
+        .terms-link {
+            color: #7c3aed;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Scroll para o texto dos termos */
+        .terms-content {
+            text-align: left;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            padding-right: 5px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #444;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .terms-content h3 { font-size: 1rem; margin-top: 1rem; color: #333; }
+        .terms-content ul { padding-left: 20px; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -62,6 +107,14 @@
                     <input type="password" id="registerPassword" placeholder="Senha (mín. 6 caracteres)" required minlength="6">
                     <i class="fas fa-lock"></i>
                 </div>
+
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="termsAccepted" required>
+                    <label for="termsAccepted">
+                        Li e concordo com os <span class="terms-link" id="openTermsLink">Termos de Uso</span>. Declaro ser maior de 18 anos e assumo total responsabilidade pelo conteúdo postado.
+                    </label>
+                </div>
+
                 <button type="submit">Cadastrar</button>
                 
                 <div class="mobile-switch">
@@ -117,6 +170,34 @@
                 <button type="submit" class="btn-confirm">Enviar Link</button>
                 <button type="button" class="btn-cancel" id="closeForgotModal">Cancelar</button>
             </form>
+        </div>
+    </div>
+
+    <div id="termsModal" class="auth-modal-overlay">
+        <div class="auth-modal">
+            <h2>Termos de Uso e Responsabilidade</h2>
+            <div class="terms-content">
+                <p>Bem-vindo à MASQUEKO. Ao utilizar nossa plataforma, você concorda com os seguintes termos:</p>
+                
+                <h3>1. Maioridade</h3>
+                <p>Você declara expressamente que <strong>possui 18 anos de idade ou mais</strong>. O uso desta plataforma é estritamente proibido para menores de idade.</p>
+
+                <h3>2. Responsabilidade pelo Conteúdo</h3>
+                <p>Você reconhece que é o único e exclusivo responsável por todo o conteúdo (textos, imagens, vídeos, áudios, etc.) que publicar, carregar ou compartilhar na MASQUEKO.</p>
+                <p>A MASQUEKO não se responsabiliza por opiniões ou materiais postados pelos usuários, mas reserva-se o direito de remover qualquer conteúdo que viole a lei ou as normas da comunidade.</p>
+
+                <h3>3. Conduta do Usuário</h3>
+                <ul>
+                    <li>Não publicar conteúdo ilegal, difamatório ou que incite o ódio.</li>
+                    <li>Respeitar a privacidade e os direitos de terceiros.</li>
+                    <li>Não utilizar a plataforma para spam ou atividades maliciosas.</li>
+                </ul>
+
+                <h3>4. Aceite</h3>
+                <p>Ao criar sua conta, você confirma que leu, compreendeu e concorda com todos os termos acima.</p>
+            </div>
+            <button type="button" class="btn-confirm" id="acceptTermsBtn">Entendi e Concordo</button>
+            <button type="button" class="btn-cancel" id="closeTermsModal">Fechar</button>
         </div>
     </div>
 

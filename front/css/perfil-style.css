@@ -1979,3 +1979,683 @@
 
     .profile-card, .trending-card { position: static; top: auto; margin-top: 1.5rem; }
 }
+
+/* === Estilo da Página de Perfil e Layout de Grid === */
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* --- ADICIONADO: LAYOUT PARA A HOME COM 3 COLUNAS (OPCIONAL) OU 2 COLUNAS --- */
+/* Se a home tiver a classe 'feed-grid', usamos este layout */
+.feed-grid {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px; /* Menu Esq | Feed | Trending Dir */
+    gap: 2rem;
+    align-items: start;
+}
+
+/* --- ADICIONADO: ESTILO DO MENU LATERAL (SIDEBAR) --- */
+.side-nav {
+    background: var(--surface-color);
+    padding: 1rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: sticky;
+    top: 100px;
+}
+
+.side-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition-subtle);
+    font-size: 1rem;
+}
+
+.side-nav-item:hover {
+    background-color: var(--primary-extralight);
+    color: var(--primary-dark);
+}
+
+.side-nav-item.active {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.side-nav-item i {
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+/* --- Componentes Genéricos de Card --- */
+.card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+.section-divider {
+    border: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 2rem 0;
+}
+
+/* --- Caixa de Criar Postagem --- */
+.create-post-box {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+.create-post-box h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+.create-post-box form { display: flex; flex-direction: column; gap: 1rem; }
+.create-post-box textarea, .create-post-box select, .create-post-box input {
+    width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm); background-color: var(--background-color);
+    color: var(--text-primary); font-family: var(--font-family-main);
+    font-size: 1rem; transition: var(--transition-subtle);
+    box-sizing: border-box;
+}
+.create-post-box textarea:focus, .create-post-box select:focus, .create-post-box input:focus {
+    outline: none; border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-extralight);
+}
+.create-post-box button {
+    align-self: flex-end; padding: 0.7rem 1.5rem;
+    background: var(--primary-color); color: var(--text-light);
+    border: none; border-radius: var(--border-radius-sm); cursor: pointer;
+    font-size: 1rem; font-weight: 600;
+    transition: var(--transition-subtle);
+}
+.create-post-box button:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.02);
+}
+
+/* --- Card de Postagem --- */
+.post-card {
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+.post-card-content { padding: 1.5rem; }
+.post-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; position: relative; }
+.post-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+.post-author { font-weight: 700; color: var(--text-primary); }
+.post-meta { font-size: 0.9rem; }
+.post-meta a { color: var(--primary-color); text-decoration: none; font-weight: 600; transition: var(--transition-subtle); }
+.post-meta a:hover { text-decoration: underline; }
+.post-content p { margin: 0; line-height: 1.7; color: var(--text-secondary); word-wrap: break-word; }
+
+.post-image-container {
+    margin-top: 1rem;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+.post-image {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+}
+
+.post-actions {
+    display: flex; align-items: center; gap: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+}
+.vote-buttons {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-extralight);
+    padding: 0.25rem;
+    border-radius: 99px;
+}
+.vote-btn {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition-subtle);
+}
+.vote-btn:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+.vote-btn.liked { color: var(--primary-color); }
+.vote-btn.disliked { color: #ef4444; }
+.vote-count {
+    font-weight: 700;
+    color: var(--text-primary);
+    padding: 0 0.5rem;
+    font-size: 0.9rem;
+}
+.comment-button {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: transparent; border: none; cursor: pointer;
+    padding: 0.4rem 0.8rem; border-radius: 99px;
+    color: var(--text-secondary); font-weight: 600; font-size: 0.9rem;
+    transition: var(--transition-subtle);
+}
+.comment-button:hover {
+    background-color: var(--primary-extralight);
+    color: var(--primary-dark);
+}
+
+/* --- Card de Perfil (COM BANNER) --- */
+.profile-card {
+    position: sticky; top: 110px; overflow: hidden; text-align: center;
+}
+.profile-header {
+    height: 180px;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    position: relative;
+}
+.profile-banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.profile-picture {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 4px solid var(--surface-color);
+    margin: -60px auto 0;
+    display: block;
+    object-fit: cover; box-shadow: var(--shadow-lg);
+    position: relative;
+    background-color: var(--surface-color);
+}
+.profile-body { padding: 1.5rem; }
+.profile-body h2 {
+    margin: 0.5rem 0; color: var(--text-primary);
+    font-size: 1.75rem; font-weight: 800;
+}
+.profile-body p {
+    color: var(--text-secondary); font-size: 1rem;
+    margin-bottom: 1rem; line-height: 1.6;
+}
+
+/* --- TAGS DO PERFIL --- */
+.profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.profile-tag {
+    background-color: var(--primary-extralight);
+    color: var(--primary-dark);
+    padding: 0.3rem 0.8rem;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid var(--primary-light);
+}
+
+/* --- BADGES (CONQUISTAS) --- */
+.profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+    background: var(--background-color);
+    border-radius: 12px;
+}
+.badge-item {
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+.badge-item:hover {
+    transform: scale(1.2);
+}
+.badge-item:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-bottom: 5px;
+    z-index: 10;
+}
+
+.profile-actions button {
+    width: 100%; padding: 0.8rem;
+    background-color: var(--primary-extralight); color: var(--primary-dark);
+    border: none; border-radius: var(--border-radius-sm); cursor: pointer;
+    font-size: 1rem; font-weight: 700;
+    transition: var(--transition-subtle);
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.profile-actions button:hover {
+    background-color: var(--primary-color); color: var(--text-light);
+    transform: translateY(-2px); box-shadow: var(--shadow-md);
+}
+
+/* Comentários e Botões Admin */
+.comments-section {
+    padding: 0 1.5rem 1.5rem;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    display: none;
+    animation: fadeIn 0.5s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.comment-form {
+    display: flex; gap: 1rem; margin-top: 1.5rem; margin-bottom: 1.5rem;
+}
+.comment-form textarea {
+    flex-grow: 1; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);
+    padding: 0.75rem; font-family: var(--font-family-main); resize: vertical; min-height: 40px; box-sizing: border-box;
+}
+.comment-form button {
+    background: var(--primary-color); color: var(--text-light); border: none;
+    border-radius: var(--border-radius-sm); padding: 0.5rem 1rem; cursor: pointer;
+    font-weight: 600; transition: var(--transition-subtle); height: 40px;
+}
+.comment-form button:hover { background-color: var(--primary-dark); }
+
+.comment { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.comment-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+.comment-body {
+    background-color: var(--surface-color); border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem; border-radius: var(--border-radius-lg); width: 100%;
+}
+.comment-author { font-weight: 700; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.25rem; }
+.comment-text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; word-wrap: break-word; }
+
+.post-admin-actions { position: absolute; top: 0; right: 0; display: flex; gap: 0.5rem; }
+.post-action-btn {
+    background: transparent; border: none; color: var(--text-secondary);
+    font-size: 1rem; cursor: pointer; padding: 0.25rem; border-radius: 50%;
+    transition: var(--transition-subtle);
+}
+.post-action-btn:hover { background-color: var(--primary-extralight); color: var(--primary-dark); }
+.post-action-btn[data-action="delete-post"]:hover { color: #ef4444; }
+
+.post-author a, .comment-author-link { color: var(--text-primary); text-decoration: none; font-weight: 700; }
+.post-author a:hover, .comment-author-link:hover { text-decoration: underline; color: var(--primary-color); }
+
+.profile-actions button.danger { background-color: #fef2f2; color: #ef4444; }
+.profile-actions button.danger:hover { background-color: #fee2e2; color: #dc2626; }
+.profile-actions button:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; }
+
+.post-content a.hashtag-link { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+.post-content a.hashtag-link:hover { text-decoration: underline; }
+
+.tag-header { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 2rem; }
+.tag-header span { color: var(--primary-color); }
+
+.trending-card { padding: 1.5rem; margin-top: 2rem; position: sticky; top: 250px; }
+.trending-card h3 { margin-top: 0; font-size: 1.25rem; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; margin-bottom: 1rem; }
+.trending-card h3 i { color: var(--primary-color); }
+.trending-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+.trending-item a { font-size: 1.1rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+.trending-item a:hover { text-decoration: underline; }
+.trending-count { display: block; font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem; }
+
+@media (max-width: 768px) {
+    /* Ajustes para Mobile */
+    .feed-grid { 
+        grid-template-columns: 1fr; /* Volta para 1 coluna no mobile */
+        gap: 1.5rem;
+    }
+    
+    /* Esconde as colunas laterais no mobile ou reordena */
+    .left-column { display: none; } 
+    .right-column { display: none; }
+    
+    .profile-grid { 
+        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+    }
+    .profile-column { order: -1; }
+    .feed-column { order: 1; }
+    .profile-card, .trending-card { position: static; top: auto; margin-top: 1.5rem; }
+}
+
+/* === Estilo da Página de Perfil e Layout de Grid === */
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Coluna Feed (maior) | Coluna Lateral (menor) */
+    gap: 2rem;
+    align-items: start;
+    width: 100%;
+}
+
+/* --- Componentes Genéricos de Card --- */
+.card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+.section-divider {
+    border: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 2rem 0;
+}
+
+/* --- Caixa de Criar Postagem --- */
+.create-post-box {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+.create-post-box h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+.create-post-box form { display: flex; flex-direction: column; gap: 1rem; }
+.create-post-box textarea, .create-post-box select, .create-post-box input {
+    width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm); background-color: var(--background-color);
+    color: var(--text-primary); font-family: var(--font-family-main);
+    font-size: 1rem; transition: var(--transition-subtle);
+    box-sizing: border-box;
+}
+.create-post-box textarea:focus, .create-post-box select:focus, .create-post-box input:focus {
+    outline: none; border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-extralight);
+}
+.create-post-box button {
+    align-self: flex-end; padding: 0.7rem 1.5rem;
+    background: var(--primary-color); color: var(--text-light);
+    border: none; border-radius: var(--border-radius-sm); cursor: pointer;
+    font-size: 1rem; font-weight: 600;
+    transition: var(--transition-subtle);
+}
+.create-post-box button:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.02);
+}
+
+/* --- Card de Postagem --- */
+.post-card {
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+.post-card-content { padding: 1.5rem; }
+.post-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; position: relative; }
+.post-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+.post-author { font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; } /* Flex para o badge */
+.post-meta { font-size: 0.9rem; }
+.post-meta a { color: var(--primary-color); text-decoration: none; font-weight: 600; transition: var(--transition-subtle); }
+.post-meta a:hover { text-decoration: underline; }
+.post-content p { margin: 0; line-height: 1.7; color: var(--text-secondary); word-wrap: break-word; }
+
+.post-image-container {
+    margin-top: 1rem;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+.post-image {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+}
+
+.post-actions {
+    display: flex; align-items: center; gap: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+}
+.vote-buttons {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-extralight);
+    padding: 0.25rem;
+    border-radius: 99px;
+}
+.vote-btn {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition-subtle);
+}
+.vote-btn:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+.vote-btn.liked { color: var(--primary-color); }
+.vote-btn.disliked { color: #ef4444; }
+.vote-count {
+    font-weight: 700;
+    color: var(--text-primary);
+    padding: 0 0.5rem;
+    font-size: 0.9rem;
+}
+.comment-button {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: transparent; border: none; cursor: pointer;
+    padding: 0.4rem 0.8rem; border-radius: 99px;
+    color: var(--text-secondary); font-weight: 600; font-size: 0.9rem;
+    transition: var(--transition-subtle);
+}
+.comment-button:hover {
+    background-color: var(--primary-extralight);
+    color: var(--primary-dark);
+}
+
+/* --- Card de Perfil (COM BANNER) --- */
+.profile-card {
+    position: sticky; top: 110px; overflow: hidden; text-align: center;
+}
+.profile-header {
+    height: 180px;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    position: relative;
+}
+.profile-banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.profile-picture {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 4px solid var(--surface-color);
+    margin: -60px auto 0;
+    display: block;
+    object-fit: cover; box-shadow: var(--shadow-lg);
+    position: relative;
+    background-color: var(--surface-color);
+}
+.profile-body { padding: 1.5rem; }
+.profile-body h2 {
+    margin: 0.5rem 0; color: var(--text-primary);
+    font-size: 1.75rem; font-weight: 800;
+    display: flex; justify-content: center; align-items: center; gap: 8px; /* Para o badge */
+}
+.profile-body p {
+    color: var(--text-secondary); font-size: 1rem;
+    margin-bottom: 1rem; line-height: 1.6;
+}
+
+/* --- TAGS DO PERFIL --- */
+.profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.profile-tag {
+    background-color: var(--primary-extralight);
+    color: var(--primary-dark);
+    padding: 0.3rem 0.8rem;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid var(--primary-light);
+}
+
+/* --- BADGES (CONQUISTAS) --- */
+.profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+    background: var(--background-color);
+    border-radius: 12px;
+}
+.badge-item {
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+.badge-item:hover {
+    transform: scale(1.2);
+}
+.badge-item:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-bottom: 5px;
+    z-index: 10;
+}
+
+.profile-actions button {
+    width: 100%; padding: 0.8rem;
+    background-color: var(--primary-extralight); color: var(--primary-dark);
+    border: none; border-radius: var(--border-radius-sm); cursor: pointer;
+    font-size: 1rem; font-weight: 700;
+    transition: var(--transition-subtle);
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.profile-actions button:hover {
+    background-color: var(--primary-color); color: var(--text-light);
+    transform: translateY(-2px); box-shadow: var(--shadow-md);
+}
+
+/* Comentários e Botões Admin */
+.comments-section {
+    padding: 0 1.5rem 1.5rem;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    display: none;
+    animation: fadeIn 0.5s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.comment-form {
+    display: flex; gap: 1rem; margin-top: 1.5rem; margin-bottom: 1.5rem;
+}
+.comment-form textarea {
+    flex-grow: 1; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);
+    padding: 0.75rem; font-family: var(--font-family-main); resize: vertical; min-height: 40px; box-sizing: border-box;
+}
+.comment-form button {
+    background: var(--primary-color); color: var(--text-light); border: none;
+    border-radius: var(--border-radius-sm); padding: 0.5rem 1rem; cursor: pointer;
+    font-weight: 600; transition: var(--transition-subtle); height: 40px;
+}
+.comment-form button:hover { background-color: var(--primary-dark); }
+
+.comment { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.comment-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+.comment-body {
+    background-color: var(--surface-color); border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem; border-radius: var(--border-radius-lg); width: 100%;
+}
+.comment-author { font-weight: 700; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 4px; }
+.comment-text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; word-wrap: break-word; }
+
+.post-admin-actions { position: absolute; top: 0; right: 0; display: flex; gap: 0.5rem; }
+.post-action-btn {
+    background: transparent; border: none; color: var(--text-secondary);
+    font-size: 1rem; cursor: pointer; padding: 0.25rem; border-radius: 50%;
+    transition: var(--transition-subtle);
+}
+.post-action-btn:hover { background-color: var(--primary-extralight); color: var(--primary-dark); }
+.post-action-btn[data-action="delete-post"]:hover { color: #ef4444; }
+
+.post-author a, .comment-author-link { color: var(--text-primary); text-decoration: none; font-weight: 700; }
+.post-author a:hover, .comment-author-link:hover { text-decoration: underline; color: var(--primary-color); }
+
+.profile-actions button.danger { background-color: #fef2f2; color: #ef4444; }
+.profile-actions button.danger:hover { background-color: #fee2e2; color: #dc2626; }
+.profile-actions button:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; }
+
+.post-content a.hashtag-link { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+.post-content a.hashtag-link:hover { text-decoration: underline; }
+
+.tag-header { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 2rem; }
+.tag-header span { color: var(--primary-color); }
+
+.trending-card { padding: 1.5rem; margin-top: 2rem; position: sticky; top: 250px; }
+.trending-card h3 { margin-top: 0; font-size: 1.25rem; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; margin-bottom: 1rem; }
+.trending-card h3 i { color: var(--primary-color); }
+.trending-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+.trending-item a { font-size: 1.1rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+.trending-item a:hover { text-decoration: underline; }
+.trending-count { display: block; font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem; }
+
+@media (max-width: 768px) {
+    .profile-grid { 
+        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .profile-column { order: -1; }
+    .feed-column { order: 1; }
+
+    .profile-card, .trending-card { position: static; top: auto; margin-top: 1.5rem; }
+}

@@ -118,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
         userElement.className = 'user-list-item';
         userElement.dataset.userId = user._id;
         
-        // ADICIONADO: Container para imagem + bolinha de status
         userElement.innerHTML = `
             <div class="user-avatar-container">
                 <img src="${avatarUrl}" alt="Avatar" class="user-list-avatar">
@@ -159,8 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (message.sharedPost) {
             const post = message.sharedPost;
             const imageUrl = post.imageUrl ? getCleanImageUrl(post.imageUrl) : null;
+            // LINK ATUALIZADO PARA REDIRECIONAR AO POST
             contentHtml += `
-                <div class="shared-post-card" onclick="window.location.href='/pages/home.html'"> 
+                <div class="shared-post-card" onclick="window.location.href='/pages/home.html?postId=${post._id}'"> 
                     ${imageUrl ? `<img src="${imageUrl}" class="shared-post-image">` : ''}
                     <div class="shared-post-content">
                         <span class="shared-post-meta">De: ${post.authorName} em c/${post.communityName}</span>

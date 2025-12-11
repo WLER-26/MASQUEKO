@@ -8,7 +8,6 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#7c3aed">
     <link rel="apple-touch-icon" href="/assets/logo-masqueko.png">
-    
     <link rel="icon" type="image/png" href="/assets/logo-masqueko.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -16,6 +15,14 @@
     <link rel="stylesheet" href="/css/perfil-style.css">
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .share-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
+        .share-user-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
+        .share-user-item:hover { background-color: var(--primary-extralight); }
+        .share-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .share-name { font-weight: 600; color: var(--text-primary); flex-grow: 1; }
+        .share-btn-send { background: var(--primary-color); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+    </style>
 </head>
 <body>
     <header class="navbar">
@@ -51,12 +58,26 @@
                     <form id="createPostForm">
                         <textarea id="postContentInput" name="conteudo" placeholder="No que você está pensando? (#hashtag)" required></textarea>
                         
-                        <input type="file" id="postMediaFile" accept="image/*,video/*" class="input-file-hidden">
-                        <label for="postMediaFile" class="input-file-label"><i class="fa-solid fa-cloud-arrow-up"></i> <span>Escolher Arquivo</span></label>
-                        
-                        <input type="url" id="postImageUrlInput" class="url-input" placeholder="Ou cole um link de imagem/vídeo aqui..." style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                            <input type="file" id="postMediaFile" accept="image/*,video/*" class="input-file-hidden">
+                            <label for="postMediaFile" class="input-file-label" style="flex: 1; margin: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> <span>Mídia</span>
+                            </label>
+                            
+                            <button type="button" id="openPollModalBtn" class="input-file-label" style="flex: 1; margin: 0; background: var(--surface-color);">
+                                <i class="fa-solid fa-square-poll-vertical"></i> <span>Enquete</span>
+                            </button>
+                        </div>
 
-                        <select id="postCommunitySelect">
+                        <div id="pollPreviewArea" style="display: none; margin-top: 10px; padding: 10px; background: var(--primary-extralight); border-radius: 8px; border: 1px solid var(--primary-light);">
+                            <strong style="color: var(--primary-dark);"><i class="fa-solid fa-check"></i> Enquete Anexada</strong>
+                            <p id="pollPreviewQuestion" style="margin: 5px 0 0 0; font-size: 0.9rem; color: var(--text-secondary);"></p>
+                            <button type="button" id="removePollBtn" style="margin-top: 10px; background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Remover Enquete</button>
+                        </div>
+                        
+                        <input type="url" id="postImageUrlInput" class="url-input" placeholder="Ou cole um link de imagem/vídeo aqui..." style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
+
+                        <select id="postCommunitySelect" style="margin-bottom: 1rem;">
                             <option value="" disabled selected>Carregando opções...</option>
                         </select>
                         <button type="submit">Publicar</button>
@@ -94,60 +115,57 @@
         <p>&copy; 2024 MASQUEKO. Todos os direitos reservados.</p>
     </footer>
 
-    <div id="editProfileModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-profile">
+    <div id="editProfileModal" class="modal-overlay" role="dialog">
         <div class="modal-content">
-            <header class="modal-header">
-                <h2 id="modal-title-profile">Editar Perfil</h2>
-                <button id="closeEditProfileModalBtn" class="close-btn" aria-label="Fechar modal">&times;</button>
-            </header>
+            <header class="modal-header"><h2>Editar Perfil</h2><button id="closeEditProfileModalBtn" class="close-btn">&times;</button></header>
             <form id="editProfileForm">
-                <div class="form-group">
-                    <label for="editNameInput">Nome:</label>
-                    <input type="text" id="editNameInput" required>
-                </div>
-                <div class="form-group">
-                    <label for="editBioInput">Bio:</label>
-                    <textarea id="editBioInput"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="editTagsInput">Tags (separadas por vírgula):</label>
-                    <input type="text" id="editTagsInput" placeholder="Ex: Gamer, Desenvolvedor, Músico">
-                </div>
-                <div class="form-group">
-                    <label for="editAvatarFile">Foto de Perfil (Avatar):</label>
-                    <input type="file" id="editAvatarFile" accept="image/*" class="input-file-hidden">
-                    <label for="editAvatarFile" class="input-file-label"><i class="fa-solid fa-cloud-arrow-up"></i> <span>Escolher Foto</span></label>
-                    <input type="url" id="editAvatarInput" placeholder="Ou URL da imagem" style="margin-top:0.5rem; width:100%; padding:0.5rem;">
-                </div>
-                <div class="form-group">
-                    <label for="editBannerFile">Foto de Capa (Banner):</label>
-                    <input type="file" id="editBannerFile" accept="image/*" class="input-file-hidden">
-                    <label for="editBannerFile" class="input-file-label"><i class="fa-regular fa-image"></i> <span>Escolher Banner</span></label>
-                    <input type="url" id="editBannerInput" placeholder="Ou URL do banner" style="margin-top:0.5rem; width:100%; padding:0.5rem;">
-                </div>
-                <button type="submit" class="submit-btn">Salvar Alterações</button>
+                <div class="form-group"><label>Nome:</label><input type="text" id="editNameInput" required></div>
+                <div class="form-group"><label>Bio:</label><textarea id="editBioInput"></textarea></div>
+                <div class="form-group"><label>Tags:</label><input type="text" id="editTagsInput" placeholder="Ex: Gamer, Desenvolvedor"></div>
+                <div class="form-group"><label>Avatar:</label><input type="file" id="editAvatarFile" class="input-file-hidden"><label for="editAvatarFile" class="input-file-label">Escolher</label><input type="url" id="editAvatarInput" placeholder="Ou URL" style="width:100%;margin-top:5px;"></div>
+                <div class="form-group"><label>Banner:</label><input type="file" id="editBannerFile" class="input-file-hidden"><label for="editBannerFile" class="input-file-label">Escolher</label><input type="url" id="editBannerInput" placeholder="Ou URL" style="width:100%;margin-top:5px;"></div>
+                <button type="submit" class="submit-btn">Salvar</button>
             </form>
         </div>
     </div>
     
-    <div id="editPostModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-post">
+    <div id="editPostModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header"><h2>Editar Postagem</h2><button id="closeEditPostModalBtn" class="close-btn">&times;</button></header>
+            <form id="editPostForm"><input type="hidden" id="editPostIdInput"><div class="form-group"><textarea id="editPostContentInput" rows="5" required></textarea></div><div class="form-group"><input type="url" id="editPostImageUrlInput"></div><button type="submit" class="submit-btn">Salvar</button></form>
+        </div>
+    </div>
+
+    <div id="sharePostModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header"><h2>Enviar para...</h2><button id="closeShareModalBtn" class="close-btn">&times;</button></header>
+            <div style="margin-bottom: 10px;"><input type="text" id="shareSearchInput" placeholder="Buscar amigo..." style="width: 100%; padding: 8px;"></div>
+            <ul class="share-list" id="shareFriendList"><p style="text-align: center;">Carregando...</p></ul>
+        </div>
+    </div>
+
+    <div id="repostModal" class="modal-overlay" role="dialog">
         <div class="modal-content">
             <header class="modal-header">
-                <h2 id="modal-title-post">Editar Postagem</h2>
-                <button id="closeEditPostModalBtn" class="close-btn" aria-label="Fechar modal">&times;</button>
+                <h2>Repostar Publicação</h2>
+                <button id="closeRepostModalBtn" class="close-btn">&times;</button>
             </header>
-            <form id="editPostForm">
-                <input type="hidden" id="editPostIdInput">
+            <form id="repostForm">
+                <input type="hidden" id="repostPostIdInput">
                 <div class="form-group">
-                    <label for="editPostContentInput">Conteúdo:</label>
-                    <textarea id="editPostContentInput" rows="5" required></textarea>
+                    <textarea id="repostCommentInput" placeholder="Adicione um comentário ao repost (opcional)..." rows="4" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="editPostImageUrlInput">URL da Mídia:</label>
-                    <input type="url" id="editPostImageUrlInput">
-                </div>
-                <button type="submit" class="submit-btn">Salvar Alterações</button>
+                <button type="submit" class="submit-btn"><i class="fa-solid fa-retweet"></i> Repostar</button>
             </form>
+        </div>
+    </div>
+
+    <div id="createPollModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header"><h2>Criar Enquete</h2><button id="closePollModalBtn" class="close-btn">&times;</button></header>
+            <div class="form-group"><label>Pergunta:</label><input type="text" id="pollQuestionInput" placeholder="Ex: Qual o melhor jogo de RPG?" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;"></div>
+            <div class="form-group"><label>Opções:</label><div id="pollOptionsList"><input type="text" class="poll-option-input" placeholder="Opção 1" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;"><input type="text" class="poll-option-input" placeholder="Opção 2" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;"></div><button type="button" id="addPollOptionBtn" class="add-option-btn" style="background: transparent; border: 1px dashed var(--primary-color); color: var(--primary-color); width: 100%; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-plus"></i> Adicionar Opção</button></div>
+            <button type="button" id="confirmPollBtn" class="submit-btn">Anexar Enquete</button>
         </div>
     </div>
 

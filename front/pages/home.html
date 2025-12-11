@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Página Inicial - MASQUEKO</title>
+    <title>Início - MASQUEKO</title>
+    
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#7c3aed">
     <link rel="apple-touch-icon" href="/assets/logo-masqueko.png">
     <link rel="icon" type="image/png" href="/assets/logo-masqueko.png">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/perfil-style.css">
+    <link rel="stylesheet" href="/css/perfil-style.css"> 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .share-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
@@ -19,6 +21,29 @@
         .share-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .share-name { font-weight: 600; color: var(--text-primary); flex-grow: 1; }
         .share-btn-send { background: var(--primary-color); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+        
+        .post-tools { display: flex; gap: 10px; margin-top: 10px; }
+        .post-tools .input-file-label { margin: 0; flex: 1; text-align: center; justify-content: center; }
+        
+        /* Botão de Denúncia Discreto */
+        .btn-report { color: #94a3b8; background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 5px; }
+        .btn-report:hover { color: #ef4444; }
+
+        /* Estilo dos Cards de Plano */
+        .plan-card {
+            border: 1px solid var(--border-color); 
+            padding: 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            text-align: center; 
+            transition: 0.2s;
+            background: var(--surface-color);
+        }
+        .plan-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -52,17 +77,17 @@
         <main class="profile-grid">
             <div class="feed-column">
                 <div class="create-post-box card" id="createPostContainer">
-                    <h3><i class="fa-solid fa-pen-to-square"></i> Criar Nova Postagem</h3>
+                    <h3 style="margin-bottom: 10px;"><i class="fa-solid fa-pen-to-square"></i> Criar Nova Postagem</h3>
                     <form id="createPostForm">
-                        <textarea id="postContentInput" name="conteudo" placeholder="Compartilhe algo... (Markdown suportado: **negrito**, # título)" required></textarea>
+                        <textarea id="postContentInput" name="conteudo" placeholder="No que você está pensando? (#hashtag)" required style="resize: vertical; min-height: 80px;"></textarea>
                         
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                        <div class="post-tools">
                             <input type="file" id="postMediaFile" accept="image/*,video/*" class="input-file-hidden">
-                            <label for="postMediaFile" class="input-file-label" style="flex: 1; margin: 0;">
+                            <label for="postMediaFile" class="input-file-label">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> <span>Mídia</span>
                             </label>
                             
-                            <button type="button" id="openPollModalBtn" class="input-file-label" style="flex: 1; margin: 0; background: var(--surface-color);">
+                            <button type="button" id="openPollModalBtn" class="input-file-label" style="background: var(--surface-color); border: 1px solid var(--border-color);">
                                 <i class="fa-solid fa-square-poll-vertical"></i> <span>Enquete</span>
                             </button>
                         </div>
@@ -73,21 +98,35 @@
                             <button type="button" id="removePollBtn" style="margin-top: 10px; background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Remover Enquete</button>
                         </div>
 
-                        <input type="url" id="postImageUrlInput" class="url-input" placeholder="Ou cole um link de imagem/vídeo aqui..." style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
-                        <select id="postCommunitySelect" style="margin-bottom: 1rem;">
-                            <option value="" disabled selected>Carregando opções...</option>
-                        </select>
-                        <button type="submit">Publicar</button>
+                        <input type="url" id="postImageUrlInput" class="url-input" placeholder="Ou cole um link de imagem/vídeo aqui..." style="width: 100%; padding: 0.75rem; margin-top: 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            <select id="postCommunitySelect" style="max-width: 200px; padding: 8px;">
+                                <option value="" selected>Publicar no Perfil (Global)</option>
+                            </select>
+                            <button type="submit" class="submit-btn" style="width: auto; padding: 0.6rem 1.5rem; margin: 0;">Publicar</button>
+                        </div>
                     </form>
                 </div>
-                <hr class="section-divider" id="postDivider">
-                <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-secondary);">Feed Recente</h2>
-                <div id="feedContainer"><p>Carregando o feed...</p></div>
+                <hr class="section-divider">
+                <div id="feedContainer"></div>
             </div>
+
             <aside class="profile-column">
+                <div class="card" style="padding: 1.5rem; margin-bottom: 2rem; border: 2px solid #fbbf24; text-align: center;">
+                    <i class="fa-solid fa-crown" style="font-size: 2rem; color: #fbbf24; margin-bottom: 10px;"></i>
+                    <h3 style="margin: 0; color: var(--text-primary);">Seja um Patrocinador</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 10px 0;">Ganhe ICON e ajude a maneter o MASQUEKO!</p>
+                    <button id="openSponsorModalBtn" class="submit-btn" style="background: #fbbf24; color: #000; width: 100%;">
+                        <i class="fa-solid fa-dollar-sign"></i> Patrocinar
+                    </button>
+                </div>
+
                 <div class="card trending-card" style="margin-top: 0;">
                     <h3><i class="fa-solid fa-fire"></i> Em Alta</h3>
-                    <ul class="trending-list" id="trendingListContainer"><li>Carregando...</li></ul>
+                    <ul class="trending-list" id="trendingListContainer">
+                        <li>Carregando...</li>
+                    </ul>
                 </div>
             </aside>
         </main>
@@ -95,72 +134,134 @@
 
     <div id="editPostModal" class="modal-overlay" role="dialog">
         <div class="modal-content">
-            <header class="modal-header"><h2>Editar Postagem</h2><button id="closeEditPostModalBtn" class="close-btn">&times;</button></header>
-            <form id="editPostForm"><input type="hidden" id="editPostIdInput"><div class="form-group"><label>Conteúdo:</label><textarea id="editPostContentInput" rows="5" required></textarea></div><div class="form-group"><label>URL da Mídia:</label><input type="url" id="editPostImageUrlInput"></div><button type="submit" class="submit-btn">Salvar Alterações</button></form>
+            <header class="modal-header">
+                <h2 id="modal-title-post">Editar Postagem</h2>
+                <button id="closeEditPostModalBtn" class="close-btn">&times;</button>
+            </header>
+            <form id="editPostForm">
+                <input type="hidden" id="editPostIdInput">
+                <div class="form-group">
+                    <label for="editPostContentInput">Conteúdo:</label>
+                    <textarea id="editPostContentInput" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editPostImageUrlInput">URL da Mídia:</label>
+                    <input type="url" id="editPostImageUrlInput">
+                </div>
+                <button type="submit" class="submit-btn">Salvar Alterações</button>
+            </form>
         </div>
     </div>
 
     <div id="sharePostModal" class="modal-overlay" role="dialog">
         <div class="modal-content">
             <header class="modal-header"><h2>Enviar para...</h2><button id="closeShareModalBtn" class="close-btn">&times;</button></header>
-            <div style="margin-bottom: 10px;">
-                <input type="text" id="shareSearchInput" placeholder="Buscar amigo..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;">
-            </div>
-            <ul class="share-list" id="shareFriendList">
-                <p style="text-align: center; color: var(--text-secondary);">Carregando amigos...</p>
-            </ul>
+            <div style="margin-bottom: 10px;"><input type="text" id="shareSearchInput" placeholder="Buscar amigo..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;"></div>
+            <ul class="share-list" id="shareFriendList"><p style="text-align: center;">Carregando...</p></ul>
+        </div>
+    </div>
+
+    <div id="repostModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Repostar Publicação</h2>
+                <button id="closeRepostModalBtn" class="close-btn">&times;</button>
+            </header>
+            <form id="repostForm">
+                <input type="hidden" id="repostPostIdInput">
+                <div class="form-group">
+                    <textarea id="repostCommentInput" placeholder="Adicione um comentário ao repost (opcional)..." rows="4" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="submit-btn"><i class="fa-solid fa-retweet"></i> Repostar</button>
+            </form>
         </div>
     </div>
 
     <div id="createPollModal" class="modal-overlay" role="dialog">
         <div class="modal-content">
-            <header class="modal-header">
-                <h2>Criar Enquete</h2>
-                <button id="closePollModalBtn" class="close-btn">&times;</button>
-            </header>
-            <div class="form-group">
-                <label>Pergunta:</label>
-                <input type="text" id="pollQuestionInput" placeholder="Ex: Qual o melhor jogo de RPG?" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
-            </div>
-            <div class="form-group">
-                <label>Opções:</label>
-                <div id="pollOptionsList">
-                    <input type="text" class="poll-option-input" placeholder="Opção 1" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;">
-                    <input type="text" class="poll-option-input" placeholder="Opção 2" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; margin-bottom: 10px;">
-                </div>
-                <button type="button" id="addPollOptionBtn" class="add-option-btn" style="background: transparent; border: 1px dashed var(--primary-color); color: var(--primary-color); width: 100%; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-plus"></i> Adicionar Opção</button>
-            </div>
+            <header class="modal-header"><h2>Criar Enquete</h2><button id="closePollModalBtn" class="close-btn">&times;</button></header>
+            <div class="form-group"><label>Pergunta:</label><input type="text" id="pollQuestionInput" placeholder="Ex: Qual o melhor jogo de RPG?" style="width: 100%; padding: 10px;"></div>
+            <div class="form-group"><label>Opções:</label><div id="pollOptionsList"><input type="text" class="poll-option-input" placeholder="Opção 1" required style="width: 100%; padding: 10px; margin-bottom: 10px;"><input type="text" class="poll-option-input" placeholder="Opção 2" required style="width: 100%; padding: 10px; margin-bottom: 10px;"></div><button type="button" id="addPollOptionBtn" class="add-option-btn" style="width: 100%; padding: 8px;">Adicionar Opção</button></div>
             <button type="button" id="confirmPollBtn" class="submit-btn">Anexar Enquete</button>
+        </div>
+    </div>
+
+    <div id="reportModal" class="modal-overlay" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Denunciar Conteúdo</h2>
+                <button id="closeReportModalBtn" class="close-btn">&times;</button>
+            </header>
+            <form id="reportForm">
+                <input type="hidden" id="reportTargetIdInput">
+                <p style="margin-bottom: 10px;">Por que você está denunciando este post?</p>
+                <div class="form-group">
+                    <select id="reportReasonInput" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <option value="spam">Spam ou Conteúdo Indesejado</option>
+                        <option value="hate_speech">Discurso de Ódio</option>
+                        <option value="harassment">Assédio ou Bullying</option>
+                        <option value="violence">Violência Gráfica</option>
+                        <option value="nudity">Nudez ou Conteúdo Sexual</option>
+                        <option value="misinformation">Informação Falsa</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn" style="background-color: #ef4444;"><i class="fa-solid fa-flag"></i> Enviar Denúncia</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="sponsorModal" class="modal-overlay" role="dialog">
+        <div class="modal-content" style="max-width: 600px;">
+            <header class="modal-header">
+                <h2><i class="fa-solid fa-crown" style="color: #fbbf24;"></i> Escolha seu Plano</h2>
+                <button id="closeSponsorModalBtn" class="close-btn">&times;</button>
+            </header>
+            
+            <div id="sponsorStep1">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;">
+                    <div class="plan-card" onclick="selectPlan('1')">
+                        <h3>1 Mês</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">R$ 5,00</p>
+                    </div>
+                    <div class="plan-card" onclick="selectPlan('2')" style="border: 1px solid #fbbf24; background: rgba(251, 191, 36, 0.1);">
+                        <h3>2 Meses</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">R$ 10,00</p>
+                        <small style="color: #fbbf24;">Popular</small>
+                    </div>
+                    <div class="plan-card" onclick="selectPlan('3')">
+                        <h3>3 Meses</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">R$ 15,00</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sponsorStep2" style="display: none; text-align: center; margin-top: 20px;">
+                <h3 id="selectedPlanTitle">Pagamento via Pix</h3>
+                <p>Escaneie o QR Code abaixo com seu banco:</p>
+                
+                <div style="background: #fff; padding: 20px; display: inline-block; margin: 15px 0; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <img id="sponsorQrCode" src="" alt="QR Code Pix" style="width: 250px; height: 250px; object-fit: contain; display: block;">
+                </div>
+                
+                <p style="font-size: 0.85rem; color: #ef4444;">* Após pagar, clique no botão abaixo para notificar o admin.</p>
+
+                <button id="confirmPaymentBtn" class="submit-btn" style="background: #22c55e; margin-top: 10px;">
+                    <i class="fa-solid fa-check"></i> Já fiz o Pagamento
+                </button>
+                <button onclick="resetSponsorModal()" style="background: none; border: none; color: var(--text-secondary); margin-top: 10px; cursor: pointer; text-decoration: underline;">Voltar</button>
+            </div>
         </div>
     </div>
 
     <div id="notification"></div>
 
     <nav class="mobile-bottom-nav">
-        <a href="/pages/home.html" class="mobile-nav-item active">
-            <i class="fa-solid fa-house"></i>
-            <span>Início</span>
-        </a>
-        <a href="/pages/comunidades.html" class="mobile-nav-item">
-            <i class="fa-solid fa-users"></i>
-            <span>Comunidades</span>
-        </a>
-        <a href="/pages/saved.html" class="mobile-nav-item">
-            <i class="fa-solid fa-bookmark"></i>
-            <span>Salvos</span>
-        </a>
-        <a href="/pages/amigos.html" class="mobile-nav-item">
-            <i class="fa-solid fa-user-group"></i>
-            <span>Amigos</span>
-        </a>
-        <a href="/pages/perfil.html" class="mobile-nav-item">
-            <i class="fa-solid fa-user"></i>
-            <span>Perfil</span>
-        </a>
-        <button id="mobileLogoutBtn" class="mobile-nav-item" style="background:none; border:none; cursor:pointer; color: #ef4444;">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Sair</span>
-        </button>
+        <a href="/pages/home.html" class="mobile-nav-item active"><i class="fa-solid fa-house"></i><span>Início</span></a>
+        <a href="/pages/comunidades.html" class="mobile-nav-item"><i class="fa-solid fa-users"></i><span>Comunidades</span></a>
+        <a href="/pages/saved.html" class="mobile-nav-item"><i class="fa-solid fa-bookmark"></i><span>Salvos</span></a>
+        <a href="/pages/amigos.html" class="mobile-nav-item"><i class="fa-solid fa-user-group"></i><span>Amigos</span></a>
+        <a href="/pages/perfil.html" class="mobile-nav-item"><i class="fa-solid fa-user"></i><span>Perfil</span></a>
+        <button id="mobileLogoutBtn" class="mobile-nav-item" style="background:none; border:none; cursor:pointer; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></button>
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>

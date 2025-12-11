@@ -2358,3 +2358,35 @@ body {
     .mobile-switch { display: block; margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-secondary); }
     .mobile-switch span { color: var(--primary-color); font-weight: 700; cursor: pointer; text-decoration: none; }
 }
+
+
+/* Adicione isso ao final do style.css ou substitua se preferir */
+
+.post-tools {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.post-tools .input-file-label {
+    margin: 0;
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    border: 1px dashed var(--border-color);
+    background-color: var(--primary-extralight);
+    color: var(--primary-dark);
+}
+
+.post-tools .input-file-label:hover {
+    background-color: var(--primary-light);
+    border-style: solid;
+}
+
+.repost-wrapper {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    background: var(--surface-color);
+}

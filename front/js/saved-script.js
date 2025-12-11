@@ -1,3 +1,4 @@
+// === Script para a Página de Salvos (saved.html) ===
 document.addEventListener('DOMContentLoaded', () => {
     const feedContainer = document.getElementById('feedContainer');
     const navUsername = document.getElementById('navUsername');
@@ -70,7 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${postMediaHtml}
                 </div>
                 <div class="post-actions">
-                    <button class="comment-button" onclick="window.location.href='/pages/home.html'"><i class="fa-solid fa-arrow-right"></i> Ver postagem completa</button>
+                    <button class="comment-button" onclick="window.location.href='/pages/home.html?postId=${post._id}'">
+                        <i class="fa-solid fa-arrow-right"></i> Ver postagem completa
+                    </button>
                 </div>
             `;
             feedContainer.appendChild(postElement);
@@ -105,6 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     logoutButton.addEventListener('click', logout);
-    // ADICIONADO: Listener do botão Sair Mobile
+    // Listener do botão Sair Mobile
     document.getElementById('mobileLogoutBtn')?.addEventListener('click', logout);
 });

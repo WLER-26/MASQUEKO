@@ -14,11 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileToRegister = document.getElementById('mobileToRegister');
     const mobileToLogin = document.getElementById('mobileToLogin');
 
+    // MODAL SENHA
     const forgotPasswordLink = document.getElementById('forgotPasswordLink');
     const forgotPasswordModal = document.getElementById('forgotPasswordModal');
     const closeForgotModalBtn = document.getElementById('closeForgotModal');
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     const forgotEmailInput = document.getElementById('forgotEmailInput');
+
+    // --- NOVO: LÓGICA DO MODAL DE TERMOS ---
+    const termsModal = document.getElementById('termsModal');
+    const openTermsLink = document.getElementById('openTermsLink');
+    const closeTermsModalBtn = document.getElementById('closeTermsModal');
+    const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+    const termsCheckbox = document.getElementById('termsAccepted');
 
     const isValidEmailFormat = (email) => {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -50,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileToLogin?.addEventListener('click', () => container.classList.remove('active'));
     }
 
+    // --- MODAL ESQUECEU SENHA ---
     if (forgotPasswordLink) {
         forgotPasswordLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -59,8 +68,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeForgotModalBtn) {
         closeForgotModalBtn.addEventListener('click', () => forgotPasswordModal.classList.remove('show'));
     }
+
+    // --- MODAL TERMOS DE USO ---
+    if (openTermsLink) {
+        openTermsLink.addEventListener('click', (e) => {
+            e.preventDefault(); // Impede marcar o checkbox ao clicar no link
+            termsModal.classList.add('show');
+        });
+    }
+    if (closeTermsModalBtn) {
+        closeTermsModalBtn.addEventListener('click', () => termsModal.classList.remove('show'));
+    }
+    if (acceptTermsBtn) {
+        acceptTermsBtn.addEventListener('click', () => {
+            termsCheckbox.checked = true; // Marca o checkbox automaticamente
+            termsModal.classList.remove('show');
+        });
+    }
+
+    // FECHAR MODAIS AO CLICAR FORA
     window.addEventListener('click', (e) => {
         if (e.target === forgotPasswordModal) forgotPasswordModal.classList.remove('show');
+        if (e.target === termsModal) termsModal.classList.remove('show');
     });
 
     if (forgotPasswordForm) {
@@ -93,6 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // VERIFICAÇÃO DOS TERMOS
+        if (!termsCheckbox.checked) {
+            showNotification('Você precisa aceitar os Termos de Uso e confirmar que é maior de idade.', true);
+            return;
+        }
+
         const submitBtn = registerForm.querySelector('button');
         const originalBtnText = submitBtn.textContent;
         submitBtn.disabled = true;
@@ -125,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification(`Conta criada! Verifique o e-mail enviado para ${email} antes de entrar.`);
             container.classList.remove('active');
             registerForm.reset();
+            termsCheckbox.checked = false; // Reseta o checkbox
 
         } catch (error) {
             let msg = error.message;
